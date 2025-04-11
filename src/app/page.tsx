@@ -30,7 +30,7 @@ export default function Home() {
           </span>
         </div>
         <div className="flex items-center">
-          <Link href="/signin">
+          <Link href="/dashboard">
             <Button
               variant="outline"
               className="text-white border-white hover:bg-white hover:text-[#4F2683]"
