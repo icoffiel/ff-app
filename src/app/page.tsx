@@ -4,7 +4,11 @@ import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import { signInWithGoogle } from "@/actions/auth";
 
-export default async function Home() {
+export default async function Home({
+  searchParams,
+}: {
+  searchParams: { [key: string]: string | string[] | undefined };
+}) {
   const supabase = await createClient();
   const {
     data: { user },
@@ -14,6 +18,8 @@ export default async function Home() {
   if (user) {
     redirect("/dashboard");
   }
+
+  const error = searchParams.error;
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#4F2683] to-[#371c5b]">
@@ -43,6 +49,22 @@ export default async function Home() {
           </span>
         </div>
       </header>
+
+      {/* Error Message */}
+      {error === "unauthorized" && (
+        <div className="container mx-auto px-4 py-4">
+          <div
+            className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative"
+            role="alert"
+          >
+            <strong className="font-bold">Access Denied</strong>
+            <span className="block sm:inline">
+              {" "}
+              Your email is not authorized to access this application.
+            </span>
+          </div>
+        </div>
+      )}
 
       {/* Hero Section */}
       <main className="container mx-auto px-4 py-16 md:py-24 flex flex-col items-center">
@@ -96,14 +118,7 @@ export default async function Home() {
 
       {/* Footer */}
       <footer className="container mx-auto px-4 py-8 text-center text-gray-400 border-t border-[#6f43a3] mt-auto">
-        <div className="flex justify-center space-x-6 mb-4">
-          <Link href="#" className="hover:text-[#FFC62F]">
-            About
-          </Link>
-          <Link href="#" className="hover:text-[#FFC62F]">
-            Contact
-          </Link>
-        </div>
+        <div className="flex justify-center space-x-6 mb-4"></div>
         <p>&copy; 2025 Fantasy League Pro. All rights reserved.</p>
       </footer>
     </div>

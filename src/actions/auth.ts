@@ -44,11 +44,38 @@ export async function getCurrentUser() {
   return user
 }
 
+export async function isEmailAuthorized(email: string) {
+  const supabase = await createClient()
+  
+  const { data, error } = await supabase
+    .from('email_addresses')
+    .select('email')
+    .eq('email', email)
+    .single()
+
+  if (error) {
+    console.error('Error checking email authorization:', error)
+    return false
+  }
+
+  return !!data
+}
+
 export async function requireAuth() {
   const user = await getCurrentUser()
   
   if (!user) {
     redirect('/')
+  }
+
+  // Check if the user's email is authorized
+  const isAuthorized = await isEmailAuthorized(user.email!)
+  
+  if (!isAuthorized) {
+    // If not authorized, sign them out and redirect to home
+    const supabase = await createClient()
+    await supabase.auth.signOut()
+    redirect('/?error=unauthorized')
   }
   
   return user
